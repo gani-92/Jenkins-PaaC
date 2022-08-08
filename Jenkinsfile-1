@@ -1,0 +1,41 @@
+node {
+    stage('Deploy') {
+        timeout(time: 3, unit: 'MINUTES') {
+            retry(5) {
+                //sh 'cd /var/lib/jenkins/workspace/'
+                //sh 'rm -rf *'
+                //git url: 'https://github.com/Technicalgani/shazforiot-GOL.git'
+                sh 'ls -la'
+            }
+        }
+    }
+    
+    stage('Build') {
+        node('linuxslave1') {
+            stage("Build at Jenkins Slave1") {
+                timeout(time: 30, unit: 'MINUTES') {
+                    retry(2) {
+                        //sh 'cd /tmp/workspace/'
+                        //sh 'rm -rf *'
+                        git url: 'https://github.com/Technicalgani/shazforiot-GOL.git'
+                        sh 'mvn package'
+                        //sh 'yum install docker -y'
+                        sh 'service docker start'
+                        sh 'cp /tmp/workspace/CICD-scripted/gameoflife-web/target/gameoflife.war /tmp/workspace/CICD-scripted'
+                        sh 'cd /tmp/workspace/CICD-scripted'
+                        sh 'docker build -t mytomcat_v1 .'
+						//sh 'docker images'
+						sh 'docker stop $(docker ps -a)'
+						//sh 'docker container prune'
+						sh 'docker rm $(docker ps -a -q)'
+						sh 'docker rm -f $(docker images -q)'
+						//docker stop demo-webapp
+						//docker rm demo-webapp
+						sh 'docker run -d --name demo-webapp -p 8081:8080 mytomcat_v1' 
+						
+                    }
+                }
+            }
+        }
+    }
+}
