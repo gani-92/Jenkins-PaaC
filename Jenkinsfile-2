@@ -2,25 +2,25 @@ node('linuxslave1') {
     stage('Git source Clone') {
         timeout(time: 2, unit: 'MINUTES') {
             retry(1) {
-                git url: 'https://github.com/Technicalgani/shazforiot-GOL.git'
+                git url: 'https://github.com/gani-92/Jenkins-PaaC.git'
             }
         }
     }
     stage('Maven Build') {
         sh 'mvn package'
     }
-    stage('tomcat image creation') {
+    stage('tomcat image and container creation') {
         sh 'echo "coming soon"'
         sh 'cp /tmp/workspace/Scripted-PaaC/gameoflife-web/target/gameoflife.war /opt/tomcat'
         sh 'cp /tmp/workspace/Scripted-PaaC/Dockerfile /opt/tomcat'
         sh 'cd /opt/tomcat'
         sh 'docker build -t webimage:v1 .'
-		//sh 'docker stop $(docker ps -a)'
-		//sh 'docker container prune'
-		//sh 'docker rm $(docker ps -a -q)'
-		//sh 'docker rm -f $(docker images -q)'
-		//docker stop demo-webapp
-		//docker rm webimage:v1
-		//sh 'docker run -d --name demo-webapp -p 8081:8080 webimage:v1'
+	//sh 'docker stop $(docker ps -a)'
+	//sh 'docker container prune'
+	//sh 'docker rm $(docker ps -a -q)'
+	//sh 'docker rm -f $(docker images -q)'
+	//docker stop demo-webapp
+	//docker rm webimage:v1
+	sh 'docker run -d --name demo-webapp -p 8081:8080 webimage:v1'
     }
 }
